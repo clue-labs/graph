@@ -13,4 +13,13 @@ class EdgeUndirectedTest extends EdgeBaseTest
         $this->assertEquals(array($this->v1, $this->v2), $this->edge->getVerticesStart()->getVector());
         $this->assertEquals(array($this->v2, $this->v1), $this->edge->getVerticesTarget()->getVector());
     }
+
+    public function testConnection()
+    {
+        $this->assertTrue($this->edge->isConnection($this->v1, $this->v2));
+        $this->assertTrue($this->edge->isConnection($this->v2, $this->v1));
+
+        $this->assertFalse($this->edge->isConnection($this->v1, $this->v1));
+        $this->assertFalse($this->edge->isConnection($this->v2, $this->v2));
+    }
 }
