@@ -269,4 +269,31 @@ abstract class BaseVerticesTest extends TestCase
         $verticesIntersection = $verticesTwo->getVerticesIntersection($verticesEmpty);
         $this->assertCount(0, $verticesIntersection);
     }
+
+
+    public function testIteratable()
+    {
+        $graph = new Graph();
+        $v1 = $graph->createVertex(1);
+        $v2 = $graph->createVertex(2);
+        $v3 = $graph->createVertex(3);
+
+        $a = array($v1, $v2, $v3);
+        $vertices = $this->createVertices($a);
+
+        $n = 0;
+        foreach ($vertices as $vertex) {
+            foreach ($vertices as $inner) {
+                $this->assertEquals($v1, $vertices->getVertexFirst());
+                $this->assertEquals($v3, $vertices->getVertexLast());
+
+                $this->assertEquals($a[$n % 3], $inner);
+
+                ++$n;
+            }
+
+        }
+
+        $this->assertEquals(9, $n);
+    }
 }

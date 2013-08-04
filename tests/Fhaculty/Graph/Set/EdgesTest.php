@@ -277,4 +277,25 @@ class EdgesTest extends TestCase
         $this->assertSame(508, $edges->getSumCallback($sumweights));
         $this->assertSame(508, $edgesOrdered->getSumCallback($sumweights));
     }
+
+
+    public function testIteratable()
+    {
+        $graph = new Graph();
+        $v1 = $graph->createVertex(1);
+        $v2 = $graph->createVertex(2);
+        $e1 = $v1->createEdge($v2);
+
+        $edges = $this->createEdges(array($e1, $e1, $e1));
+
+        $n = 0;
+        foreach ($edges as $edge) {
+            foreach ($edges as $inner) {
+                $this->assertEquals($edge, $edges->getEdgeFirst());
+                ++$n;
+            }
+        }
+
+        $this->assertEquals(9, $n);
+    }
 }
