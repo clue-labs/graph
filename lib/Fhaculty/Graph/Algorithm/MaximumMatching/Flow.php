@@ -66,8 +66,8 @@ class Flow extends Base
         // visualize($resultGraph);
 
         // calculate (s*, t*)-flow
-        $algMaxFlow = new MaxFlowEdmondsKarp($superSource, $superSink);
-        $resultGraph = $algMaxFlow->createGraph();
+        $algMaxFlow = new MaxFlowEdmondsKarp();
+        $resultGraph = $algMaxFlow->createResult($superSource, $superSink)->createGraph();
 
         // destroy temporary supersource and supersink again
         $resultGraph->getVertex($superSink->getId())->destroy();

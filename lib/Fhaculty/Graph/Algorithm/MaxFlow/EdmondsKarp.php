@@ -18,28 +18,17 @@ use Fhaculty\Graph\Graph;
 use Fhaculty\Graph\Vertex;
 use Fhaculty\Graph\Edge\Base as Edge;
 use Fhaculty\Graph\Set\Edges;
-use Fhaculty\Graph\Algorithm\Base;
 use Fhaculty\Graph\Algorithm\ResidualGraph;
 use Fhaculty\Graph\Exception;
 
-class EdmondsKarp extends Base
+class EdmondsKarp implements Base
 {
-    /**
-     * @var Vertex
-     */
-    private $startVertex;
-
-    /**
-     * @var Vertex
-     */
-    private $destinationVertex;
-
     /**
      *
      * @param Vertex $startVertex       the vertex where the flow search starts
      * @param Vertex $destinationVertex the vertex where the flow search ends (destination)
      */
-    public function __construct(Vertex $startVertex, Vertex $destinationVertex)
+    public function createResult(Vertex $startVertex, Vertex $destinationVertex)
     {
         if ($startVertex === $destinationVertex) {
             throw new InvalidArgumentException('Start and destination must not be the same vertex');
@@ -47,18 +36,22 @@ class EdmondsKarp extends Base
         if ($startVertex->getGraph() !== $destinationVertex->getGraph()) {
             throw new InvalidArgumentException('Start and target vertex have to be in the same graph instance');
         }
-        $this->startVertex = $startVertex;
-        $this->destinationVertex = $destinationVertex;
+
+        $maxFlowGraph = $this->createGraph($startVertex, $destinationVertex);
+
+        return new ResultFromMaxFlowGraph($startVertex, $maxFlowGraph);
     }
 
     /**
      * Returns max flow graph
      *
+     * @param Vertex $startVertex       the vertex where the flow search starts
+     * @param Vertex $destinationVertex the vertex where the flow search ends (destination)
      * @return Graph
      */
-    public function createGraph()
+    private function createGraph(Vertex $startVertex, Vertex $destinationVertex)
     {
-        $graphResult = $this->startVertex->getGraph()->createGraphClone();
+        $graphResult = $startVertex->getGraph()->createGraphClone();
 
         // initialize null flow and check edges
         foreach ($graphResult->getEdges() as $edge) {
@@ -68,8 +61,8 @@ class EdmondsKarp extends Base
             $edge->setFlow(0);
         }
 
-        $idA = $this->startVertex->getId();
-        $idB = $this->destinationVertex->getId();
+        $idA = $startVertex->getId();
+        $idB = $destinationVertex->getId();
 
         do {
             // Generate new residual graph and repeat
@@ -107,23 +100,5 @@ class EdmondsKarp extends Base
         } while ($pathFlow);
 
         return $graphResult;
-    }
-
-    /**
-     * Returns max flow value
-     *
-     * @return double
-     */
-    public function getFlowMax()
-    {
-        $resultGraph = $this->createGraph();
-
-        $start = $resultGraph->getVertex($this->startVertex->getId());
-        $maxFlow = 0;
-        foreach ($start->getEdgesOut() as $edge) {
-            $maxFlow = $maxFlow + $edge->getFlow();
-        }
-
-        return $maxFlow;
     }
 }

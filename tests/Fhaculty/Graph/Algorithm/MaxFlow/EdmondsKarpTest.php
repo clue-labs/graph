@@ -5,9 +5,17 @@ use Fhaculty\Graph\Exception\UnexpectedValueException;
 use Fhaculty\Graph\Graph;
 
 use Fhaculty\Graph\Algorithm\MaxFlow\EdmondsKarp as AlgorithmMaxFlowEdmondsKarp;
+use Fhaculty\Graph\Vertex;
 
 class EdmondsKarpTest extends PHPUnit_Framework_TestCase
 {
+    protected function createResult(Vertex $a, Vertex $b)
+    {
+        $alg = new AlgorithmMaxFlowEdmondsKarp();
+
+        return $alg->createResult($a, $b);
+    }
+
     public function testEdgeDirected()
     {
         // 0 -[0/10]-> 1
@@ -18,9 +26,9 @@ class EdmondsKarpTest extends PHPUnit_Framework_TestCase
         $v0->createEdgeTo($v1)->setCapacity(10);
 
         // 0 -[10/10]-> 1
-        $alg = new AlgorithmMaxFlowEdmondsKarp($v0, $v1);
+        $result = $this->createResult($v0, $v1);
 
-        $this->assertEquals(10, $alg->getFlowMax());
+        $this->assertEquals(10, $result->getFlowMax());
     }
 
     public function testEdgesMultiplePaths()
@@ -42,9 +50,9 @@ class EdmondsKarpTest extends PHPUnit_Framework_TestCase
         // |                  ^
         // |                  |
         // \-[7/7]-> 2 -[7/9]-/
-        $alg = new AlgorithmMaxFlowEdmondsKarp($v0, $v1);
+        $result = $this->createResult($v0, $v1);
 
-        $this->assertEquals(12, $alg->getFlowMax());
+        $this->assertEquals(12, $result->getFlowMax());
     }
 
     public function testEdgesMultiplePathsTwo()
@@ -69,13 +77,13 @@ class EdmondsKarpTest extends PHPUnit_Framework_TestCase
         $v1->createEdgeTo($v3)->setCapacity(10);
         $v3->createEdgeTo($v2)->setCapacity(2);
 
-        $alg = new AlgorithmMaxFlowEdmondsKarp($v0, $v3);
+        $result = $this->createResult($v0, $v3);
 
-        $this->assertEquals(10, $alg->getFlowMax());
+        $this->assertEquals(10, $result->getFlowMax());
 
-        $alg = new AlgorithmMaxFlowEdmondsKarp($v0, $v2);
+        $result = $this->createResult($v0, $v2);
 
-        $this->assertEquals(9, $alg->getFlowMax());
+        $this->assertEquals(9, $result->getFlowMax());
     }
 
     public function testEdgesMultiplePathsTree()
@@ -92,9 +100,9 @@ class EdmondsKarpTest extends PHPUnit_Framework_TestCase
         $v1->createEdgeTo($v3)->setCapacity(1);
         $v2->createEdgeTo($v3)->setCapacity(6);
 
-        $alg = new AlgorithmMaxFlowEdmondsKarp($v0, $v3);
+        $result = $this->createResult($v0, $v3);
 
-        $this->assertEquals(6, $alg->getFlowMax());
+        $this->assertEquals(6, $result->getFlowMax());
     }
 
 //     public function testEdgesParallel(){
@@ -123,9 +131,9 @@ class EdmondsKarpTest extends PHPUnit_Framework_TestCase
         $v1->createEdge($v0)->setCapacity(7);
 
         // 0 -[7/7]- 1
-        $alg = new AlgorithmMaxFlowEdmondsKarp($v0, $v1);
+        $result = $this->createResult($v0, $v1);
 
-        $this->assertEquals(7, $alg->getFlowMax());
+        $this->assertEquals(7, $result->getFlowMax());
     }
 
     /**
@@ -152,7 +160,7 @@ class EdmondsKarpTest extends PHPUnit_Framework_TestCase
         $graph2 = new Graph();
         $vg2 = $graph2->createVertex(2);
 
-        new AlgorithmMaxFlowEdmondsKarp($vg1, $vg2);
+        $this->createResult($vg1, $vg2);
     }
 
     /**
@@ -163,7 +171,7 @@ class EdmondsKarpTest extends PHPUnit_Framework_TestCase
         $graph = new Graph();
         $v1 = $graph->createVertex(1);
 
-        new AlgorithmMaxFlowEdmondsKarp($v1, $v1);
+        $this->createResult($v1, $v1);
     }
 
 }
